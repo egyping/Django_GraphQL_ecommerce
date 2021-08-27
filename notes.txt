@@ -1,0 +1,29 @@
+setup
+    python3.6 -m venv oenv
+    source oenv/bin/activate
+    pip install --upgrade pip
+    pip install Django==3.2.6
+    source oenv/bin/activate
+    django-admin startproject project .
+    # sql lite > .ignore
+    add oenv > .ignore
+
+Catalog App
+    python manage.py startapp catalog
+    add catalog > settings 
+    migrate
+    work on models ... 
+    python -m pip install Pillow
+    # media files configuration > settings
+    pip install django-mptt
+        changes > settings - Admin - Model 
+
+Graphene
+    Install 
+        pip install graphene-django django-graphql-jwt
+        pip install --upgrade autopep8
+        'graphene_django', > settings 
+        GRAPHENE > settings 
+    catalog.schema.py
+    project.schema.py
+    urls.py
