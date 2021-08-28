@@ -8,6 +8,7 @@ __pycache__/
 
 # Distribution / packaging
 oenv/
+off_env/
 .Python
 build/
 develop-eggs/
