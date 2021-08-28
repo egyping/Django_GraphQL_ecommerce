@@ -71,8 +71,6 @@ class Query(graphene.ObjectType):
 
 
 
-
-
 # Create Category 
 class CreateCategory(graphene.Mutation):
     category = graphene.Field(CategoryType)
