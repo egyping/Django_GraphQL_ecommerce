@@ -1,19 +1,20 @@
 import graphene
 from graphene_django import DjangoObjectType, DjangoListField
 from .models import Category, Brand, Product, ProductImages, ProductVariant
+from django.db.models import Q
 
 # List all categories
 class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
         fields = ("id", "en_title", "ar_title", "en_description",
-        "ar_description", "slug", "cat_image", "parent", )
+        "ar_description", "slug", "cat_image", "parent", "products")
 
 class BrandType(DjangoObjectType):
     class Meta:
         model = Brand
         fields = ("id", "en_title", "ar_title", "en_description",
-        "ar_description", "slug", "cat_image", "parent", )
+        "ar_description", "slug", "cat_image", "parent", "products")
 
 class ProductImagesType(DjangoObjectType):
     class Meta:
@@ -44,14 +45,23 @@ class Query(graphene.ObjectType):
     category_by_slug = graphene.Field(CategoryType, slug=graphene.String())
     all_Brands = graphene.List(BrandType)
     brand_by_slug = graphene.Field(BrandType, slug=graphene.String())
+    all_ParentCategories = graphene.List(CategoryType)
+    
 
     # another way using django list to list model ALSO it cloudl be extended by resolve_ (root, info)
     all_Products = DjangoListField(ProductType)
 
+    
     def resolve_all_Categories(self, info):
         return Category.objects.all()
+
+    def resolve_all_ParentCategories(self, info):
+        parentCategories = Category.objects.filter(Q(parent__isnull=True))
+        return parentCategories
+
     def resolve_category_by_slug(self, info, slug):
         return Category.objects.get(slug=slug)
+
     
     def resolve_brand_by_slug(self, info, slug):
         return Brand.objects.get(slug=slug)
