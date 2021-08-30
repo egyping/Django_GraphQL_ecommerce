@@ -2,6 +2,7 @@ import graphene
 from graphene_django import DjangoObjectType, DjangoListField
 from .models import Category, Brand, Product, ProductImages, ProductVariant
 from django.db.models import Q
+from django.http.response import Http404
 
 # List all categories
 class CategoryType(DjangoObjectType):
@@ -20,6 +21,13 @@ class ProductImagesType(DjangoObjectType):
     class Meta:
         model = ProductImages
         fields = ("image",)
+    
+    # To return image full URI to the frontend 
+    # http://127.0.0.1:8000/media/catalog/prod_images/-473Wx593H-460403830-multi-MODEL3_Me8T37U.jpeg
+    def resolve_image(self, info):
+        if self.image:
+            self.image = info.context.build_absolute_uri(self.image.url)
+        return self.image
 
 class ProductVariantType(DjangoObjectType):
     class Meta:
@@ -42,10 +50,11 @@ class ProductType(DjangoObjectType):
 class Query(graphene.ObjectType):
     # listing using graphene this require resolve_method
     all_Categories = graphene.List(CategoryType)
-    category_by_slug = graphene.Field(CategoryType, slug=graphene.String())
+    category_by_slug = graphene.Field(CategoryType, slug=graphene.String(required=True))
     all_Brands = graphene.List(BrandType)
-    brand_by_slug = graphene.Field(BrandType, slug=graphene.String())
+    brand_by_slug = graphene.Field(BrandType, slug=graphene.String(required=True))
     all_ParentCategories = graphene.List(CategoryType)
+    product_by_slug = graphene.Field(ProductType, slug=graphene.String(required=True))
     
 
     # another way using django list to list model ALSO it cloudl be extended by resolve_ (root, info)
@@ -62,6 +71,11 @@ class Query(graphene.ObjectType):
     def resolve_category_by_slug(self, info, slug):
         return Category.objects.get(slug=slug)
 
+    def resolve_product_by_slug(self, info, slug):
+        try:
+            return Product.objects.get(slug=slug)
+        except Product.DoesNotExist:
+            return Http404
     
     def resolve_brand_by_slug(self, info, slug):
         return Brand.objects.get(slug=slug)
