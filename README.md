@@ -15,7 +15,7 @@ Catalog API end points
     Category products paginated > Done
 
     Brand products paginated 
-    Product PDP by slug
+    Product PDP by slug > Done
     Category per slug > Done
     Brand per slug > Done
     Category products paginated sorted by high price 
